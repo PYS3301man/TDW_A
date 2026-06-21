@@ -8,6 +8,12 @@ public class MouseLook : MonoBehaviour
 
     float xRotation = 0f;
 
+    [Header("Recoil")]
+    public float recoilAmount = 0f;
+    public float recoilRecoverySpeed = 10f;
+
+    private float currentRecoil = 0f;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -28,9 +34,24 @@ public class MouseLook : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
+        currentRecoil = Mathf.Lerp(
+            currentRecoil,
+            0f,
+            recoilRecoverySpeed * Time.deltaTime
+        );
+
         transform.localRotation =
-            Quaternion.Euler(xRotation, 0f, 0f);
+            Quaternion.Euler(
+                xRotation - currentRecoil,
+                0f,
+                0f
+            );
 
         playerBody.Rotate(Vector3.up * mouseX);
+    }
+
+    public void AddRecoil(float amount)
+    {
+        currentRecoil += amount;
     }
 }
